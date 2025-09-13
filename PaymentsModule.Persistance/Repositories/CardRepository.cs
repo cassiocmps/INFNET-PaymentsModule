@@ -18,7 +18,7 @@ public class CardRepository : ICardRepository
     public async Task<Card?> GetByIdAsync(Guid id)
     {
         var entity = await _context.Cards.FindAsync(id);
-        return entity != null ? MapToModel(entity) : null;
+        return entity is not null ? MapToModel(entity) : null;
     }
 
     public async Task<IEnumerable<Card>> GetAllAsync()
@@ -41,7 +41,7 @@ public class CardRepository : ICardRepository
     public async Task<Card?> UpdateAsync(Guid id, Card card)
     {
         var entity = await _context.Cards.FindAsync(id);
-        if (entity == null) return null;
+        if (entity is null) return null;
 
         entity.Number = card.Number;
         entity.Cvv = card.Cvv;
@@ -56,7 +56,7 @@ public class CardRepository : ICardRepository
     public async Task<bool> DeleteAsync(Guid id)
     {
         var entity = await _context.Cards.FindAsync(id);
-        if (entity == null) return false;
+        if (entity is null) return false;
 
         _context.Cards.Remove(entity);
         await _context.SaveChangesAsync();

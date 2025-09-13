@@ -23,7 +23,7 @@ public class PaymentRepository : IPaymentRepository
             .Include(p => p.Card)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        return entity != null ? MapToModel(entity) : null;
+        return entity is not null ? MapToModel(entity) : null;
     }
 
     public async Task<IEnumerable<Payment>> GetAllAsync()
@@ -38,8 +38,30 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task<Payment> CreateAsync(Payment payment)
     {
+        // Ensure order exists before creating payment
+        if (payment.Order is not null)
+        {
+            var existingOrder = await _context.Orders.FindAsync(payment.Order.Id);
+            if (existingOrder is null)
+            {
+                // Auto-create order if it doesn't exist
+                var orderEntity = new OrderEntity
+                {
+                    Id = payment.Order.Id,
+                    Status = payment.Order.Status
+                };
+                _context.Orders.Add(orderEntity);
+            }
+        }
+
         var entity = MapToEntity(payment);
-        entity.Id = Guid.NewGuid();
+        
+        // Only generate new ID if not provided
+        if (entity.Id == Guid.Empty)
+        {
+            entity.Id = Guid.NewGuid();
+        }
+        
         entity.CreatedAt = DateTime.UtcNow;
         entity.LastUpdatedAt = DateTime.UtcNow;
 
@@ -52,7 +74,7 @@ public class PaymentRepository : IPaymentRepository
     public async Task<Payment?> UpdateAsync(Guid id, Payment payment)
     {
         var entity = await _context.Payments.FindAsync(id);
-        if (entity == null) return null;
+        if (entity is null) return null;
 
         // Update properties
         entity.Amount = payment.Amount;
@@ -83,7 +105,7 @@ public class PaymentRepository : IPaymentRepository
     public async Task<bool> DeleteAsync(Guid id)
     {
         var entity = await _context.Payments.FindAsync(id);
-        if (entity == null) return false;
+        if (entity is null) return false;
 
         _context.Payments.Remove(entity);
         await _context.SaveChangesAsync();
@@ -97,7 +119,7 @@ public class PaymentRepository : IPaymentRepository
             .Include(p => p.Card)
             .FirstOrDefaultAsync(p => p.OrderId == orderId);
 
-        return entity != null ? MapToModel(entity) : null;
+        return entity is not null ? MapToModel(entity) : null;
     }
 
     private static Payment MapToModel(PaymentEntity entity)
@@ -112,7 +134,7 @@ public class PaymentRepository : IPaymentRepository
                 Amount = entity.Amount,
                 Status = entity.Status,
                 Order = new Order { Id = entity.OrderId, Status = entity.Order.Status },
-                Card = entity.Card != null ? new Card
+                Card = entity.Card is not null ? new Card
                 {
                     Id = entity.Card.Id,
                     Number = entity.Card.Number,

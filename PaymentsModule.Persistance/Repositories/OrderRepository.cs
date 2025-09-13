@@ -18,7 +18,7 @@ public class OrderRepository : IOrderRepository
     public async Task<Order?> GetByIdAsync(Guid id)
     {
         var entity = await _context.Orders.FindAsync(id);
-        return entity != null ? MapToModel(entity) : null;
+        return entity is not null ? MapToModel(entity) : null;
     }
 
     public async Task<IEnumerable<Order>> GetAllAsync()
@@ -30,7 +30,12 @@ public class OrderRepository : IOrderRepository
     public async Task<Order> CreateAsync(Order order)
     {
         var entity = MapToEntity(order);
-        entity.Id = Guid.NewGuid();
+        
+        // Only generate new ID if not provided
+        if (entity.Id == Guid.Empty)
+        {
+            entity.Id = Guid.NewGuid();
+        }
 
         _context.Orders.Add(entity);
         await _context.SaveChangesAsync();
@@ -41,7 +46,7 @@ public class OrderRepository : IOrderRepository
     public async Task<Order?> UpdateAsync(Guid id, Order order)
     {
         var entity = await _context.Orders.FindAsync(id);
-        if (entity == null) return null;
+        if (entity is null) return null;
 
         entity.Status = order.Status;
 
@@ -52,7 +57,7 @@ public class OrderRepository : IOrderRepository
     public async Task<bool> DeleteAsync(Guid id)
     {
         var entity = await _context.Orders.FindAsync(id);
-        if (entity == null) return false;
+        if (entity is null) return false;
 
         _context.Orders.Remove(entity);
         await _context.SaveChangesAsync();

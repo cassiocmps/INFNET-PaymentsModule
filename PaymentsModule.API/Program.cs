@@ -1,3 +1,12 @@
+using PaymentsModule.API.Services;
+using PaymentsModule.Persistance.Data;
+using PaymentsModule.Persistance.Repositories;
+using Microsoft.EntityFrameworkCore;
+using PaymentsModule.Domain.Interfaces.Repositories;
+using PaymentsModule.Domain.Interfaces.Services;
+using PaymentsModule.ExternalPaymentsProvider.Interfaces;
+using PaymentsModule.ExternalPaymentsProvider.Services;
+
 namespace PaymentsModule.API
 {
     public class Program
@@ -8,9 +17,23 @@ namespace PaymentsModule.API
 
             // Add services to the container.
             builder.Services.AddControllers();
+            
             // Register Swagger/OpenAPI services
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Configure Entity Framework with SQLite
+            builder.Services.AddDbContext<PaymentsDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Register application services (Dependency Injection)
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<ICardRepository, CardRepository>();
+            
+            // Register external payment provider
+            builder.Services.AddScoped<IExternalPaymentProvider, ExternalPaymentProvider>();
 
             var app = builder.Build();
 
@@ -24,7 +47,6 @@ namespace PaymentsModule.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
