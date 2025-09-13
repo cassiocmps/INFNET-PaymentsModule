@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36429.23 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsModule.API", "PaymentsModule.API\PaymentsModule.API.csproj", "{71CDC432-2727-4859-B04E-B7CDF3AF3881}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsModule.Domain", "PaymentsModule.Domain\PaymentsModule.Domain.csproj", "{07DB7E3A-4EA3-4F85-B328-27AC254E0577}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{71CDC432-2727-4859-B04E-B7CDF3AF3881}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71CDC432-2727-4859-B04E-B7CDF3AF3881}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71CDC432-2727-4859-B04E-B7CDF3AF3881}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07DB7E3A-4EA3-4F85-B328-27AC254E0577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07DB7E3A-4EA3-4F85-B328-27AC254E0577}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07DB7E3A-4EA3-4F85-B328-27AC254E0577}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07DB7E3A-4EA3-4F85-B328-27AC254E0577}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
