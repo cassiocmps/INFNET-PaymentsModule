@@ -11,17 +11,20 @@ public class PaymentService : IPaymentService
     private readonly IPaymentRepository _paymentRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly ICardRepository _cardRepository;
+    private readonly IRefundRepository _refundRepository;
     private readonly IExternalPaymentProvider _externalPaymentProvider;
 
     public PaymentService(
         IPaymentRepository paymentRepository,
         IOrderRepository orderRepository,
         ICardRepository cardRepository,
+        IRefundRepository refundRepository,
         IExternalPaymentProvider externalPaymentProvider)
     {
         _paymentRepository = paymentRepository;
         _orderRepository = orderRepository;
         _cardRepository = cardRepository;
+        _refundRepository = refundRepository;
         _externalPaymentProvider = externalPaymentProvider;
     }
 
@@ -128,7 +131,7 @@ public class PaymentService : IPaymentService
         return newPayment;
     }
 
-    public async Task<Guid> RefundPaymentAsync(Guid paymentId, BankAccount bankAccount)
+    public async Task<Refund> RefundPaymentAsync(Guid paymentId, string reason, BankAccount? bankAccount)
     {
         var payment = await _paymentRepository.GetByIdAsync(paymentId);
         if (payment is null)
@@ -141,9 +144,20 @@ public class PaymentService : IPaymentService
             throw new InvalidOperationException($"Payment with status {payment.Status} cannot be refunded");
         }
 
-        if (bankAccount is null)
+        if (payment is not CreditCardPayment && bankAccount is null )
         {
             throw new ArgumentException("Bank account information is required for refund");
+        }
+
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new ArgumentException("Refund reason is required");
+        }
+
+        var existingRefund = await _refundRepository.GetByPaymentIdAsync(paymentId);
+        if (existingRefund is not null)
+        {
+            throw new InvalidOperationException("Payment already has a refund");
         }
 
         Guid refundTransactionId;
@@ -157,13 +171,22 @@ public class PaymentService : IPaymentService
             refundTransactionId = await _externalPaymentProvider.CreateDepositAsync(payment.Amount, bankAccount);
         }
 
-        // Update payment status based on refund result
         if (refundTransactionId != Guid.Empty)
         {
             payment.Status = PaymentStatus.REFUNDED;
             payment.LastUpdatedAt = DateTime.UtcNow;
             await _paymentRepository.UpdateAsync(payment.Id, payment);
-            return refundTransactionId;
+
+            var refund = new Refund
+            {
+                Id = refundTransactionId,
+                RefundDate = DateTime.UtcNow,
+                Amount = payment.Amount,
+                Reason = reason,
+                Payment = payment
+            };
+
+            return await _refundRepository.CreateAsync(refund);
         }
         else
         {

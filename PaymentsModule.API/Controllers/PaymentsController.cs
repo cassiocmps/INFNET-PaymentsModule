@@ -44,10 +44,10 @@ namespace PaymentsModule.API.Controllers
         }
 
         [HttpPost("{id}/refund")]
-        public async Task<IActionResult> RefundPayment(Guid id, BankAccount bankAccount)
+        public async Task<IActionResult> RefundPayment(Guid paymentId, string reason, BankAccount? bankAccount)
         {
-            var refundTransactionId = await _paymentService.RefundPaymentAsync(id, bankAccount);
-            return Ok(new { PaymentId = id, RefundTransactionId = refundTransactionId });
+            var refund = await _paymentService.RefundPaymentAsync(paymentId, reason, bankAccount);
+            return Ok(refund);
         }
     }
 }

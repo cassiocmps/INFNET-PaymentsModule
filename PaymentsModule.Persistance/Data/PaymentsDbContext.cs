@@ -12,6 +12,7 @@ public class PaymentsDbContext : DbContext
     public DbSet<PaymentEntity> Payments { get; set; }
     public DbSet<OrderEntity> Orders { get; set; }
     public DbSet<CardEntity> Cards { get; set; }
+    public DbSet<RefundEntity> Refunds { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,33 @@ public class PaymentsDbContext : DbContext
             entity.Property(e => e.HolderDocument)
                 .HasMaxLength(14)
                 .IsRequired();
+        });
+
+        // Configure Refund entity - One-to-One relationship with Payment
+        modelBuilder.Entity<RefundEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Amount)
+                .HasColumnType("decimal(18,2)")
+                .IsRequired();
+
+            entity.Property(e => e.Reason)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(e => e.RefundDate)
+                .IsRequired();
+
+            // Configure 1-1 relationship: Payment can have only one refund
+            entity.HasOne(e => e.Payment)
+                .WithOne()
+                .HasForeignKey<RefundEntity>(e => e.PaymentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Add unique constraint to ensure 1-1 relationship
+            entity.HasIndex(e => e.PaymentId)
+                .IsUnique();
         });
     }
 }

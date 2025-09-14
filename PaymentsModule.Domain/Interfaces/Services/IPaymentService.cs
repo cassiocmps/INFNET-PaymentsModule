@@ -9,5 +9,5 @@ public interface IPaymentService
     Task<PixPayment> CreatePixPaymentAsync(Guid orderId, decimal amount);
     Task<BoletoPayment> CreateBoletoPaymentAsync(Guid orderId, decimal amount);
     Task<Payment> ReissuePaymentAsync(Guid paymentId);
-    Task<Guid> RefundPaymentAsync(Guid paymentId, BankAccount bankAccount);
+    Task<Refund> RefundPaymentAsync(Guid paymentId, string reason, BankAccount? bankAccount);
 }

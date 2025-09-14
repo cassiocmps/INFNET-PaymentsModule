@@ -31,6 +31,7 @@ namespace PaymentsModule.API
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<ICardRepository, CardRepository>();
+            builder.Services.AddScoped<IRefundRepository, RefundRepository>();
             
             // Register external payment provider
             builder.Services.AddScoped<IExternalPaymentProvider, ExternalPaymentProvider>();
