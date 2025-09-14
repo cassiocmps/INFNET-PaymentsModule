@@ -6,6 +6,7 @@ using PaymentsModule.Domain.Interfaces.Repositories;
 using PaymentsModule.Domain.Interfaces.Services;
 using PaymentsModule.ExternalPaymentsProvider.Interfaces;
 using PaymentsModule.ExternalPaymentsProvider.Services;
+using PaymentsModuleAPI.Middleware;
 
 namespace PaymentsModule.API
 {
@@ -37,6 +38,9 @@ namespace PaymentsModule.API
             builder.Services.AddScoped<IExternalPaymentProvider, ExternalPaymentProvider>();
 
             var app = builder.Build();
+
+            // Add exception handling middleware
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
