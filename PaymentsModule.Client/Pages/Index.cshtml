@@ -1,0 +1,169 @@
+﻿@page
+@model PaymentsModule.Client.Pages.IndexModel
+@{
+    ViewData["Title"] = "Create Payment";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Payment</h4>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.Message))
+                {
+                    <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                        <i class="fas @(Model.IsSuccess ? "fa-check-circle" : "fa-exclamation-triangle") me-2"></i>
+                        @Model.Message
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="OrderId" class="form-label">Order ID</label>
+                            <input asp-for="Request.OrderId" class="form-control" id="OrderId" />
+                            <span asp-validation-for="Request.OrderId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-secondary" onclick="generateGuid('OrderId')">
+                                <i class="fas fa-random me-1"></i>Generate
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="PaymentType" class="form-label">Payment Type</label>
+                        <select asp-for="Request.PaymentType" class="form-select" id="PaymentType" onchange="togglePaymentFields()">
+                            <option value="">Select payment type...</option>
+                            <option value="CreditCard">Credit Card</option>
+                            <option value="Pix">PIX</option>
+                            <option value="Boleto">Boleto</option>
+                        </select>
+                        <span asp-validation-for="Request.PaymentType" class="text-danger"></span>
+                    </div>
+
+                    <div id="cardFields" class="mb-3" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="CardId" class="form-label">Card ID</label>
+                                <input asp-for="Request.CardId" class="form-control" id="CardId" />
+                                <span asp-validation-for="Request.CardId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-secondary" onclick="generateGuid('CardId')">
+                                    <i class="fas fa-random me-1"></i>Generate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="Amount" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="Request.Amount" class="form-control" id="Amount" step="0.01" min="0" />
+                        </div>
+                        <span asp-validation-for="Request.Amount" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Create Payment
+                        </button>
+                    </div>
+                </form>
+
+                @if (Model.PaymentResponse != null)
+                {
+                    <hr class="my-4">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Payment Created Successfully</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Payment ID:</strong> @Model.PaymentResponse.Id</p>
+                                    <p><strong>Amount:</strong> $@Model.PaymentResponse.Amount.ToString("F2")</p>
+                                    <p><strong>Status:</strong> <span class="badge bg-info">@Model.PaymentResponse.Status</span></p>
+                                    <p><strong>Created:</strong> @Model.PaymentResponse.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    @if (!string.IsNullOrEmpty(Model.PaymentResponse.QrCode))
+                                    {
+                                        <div class="mb-3">
+                                            <strong>PIX QR Code:</strong>
+                                            <div class="mt-2">
+                                                <code class="bg-light p-2 d-block small" style="word-break: break-all;">@Model.PaymentResponse.QrCode</code>
+                                            </div>
+                                            @if (Model.PaymentResponse.ExpirationDate.HasValue)
+                                            {
+                                                <small class="text-muted">Expires: @Model.PaymentResponse.ExpirationDate.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                                            }
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.PaymentResponse.Barcode))
+                                    {
+                                        <div class="mb-3">
+                                            <strong>Boleto Barcode:</strong>
+                                            <div class="mt-2">
+                                                <code class="bg-light p-2 d-block small" style="word-break: break-all;">@Model.PaymentResponse.Barcode</code>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.PaymentResponse.DigitableLine))
+                                    {
+                                        <div class="mb-3">
+                                            <strong>Digitable Line:</strong>
+                                            <div class="mt-2">
+                                                <code class="bg-light p-2 d-block small" style="word-break: break-all;">@Model.PaymentResponse.DigitableLine</code>
+                                            </div>
+                                            @if (Model.PaymentResponse.DueDate.HasValue)
+                                            {
+                                                <small class="text-muted">Due Date: @Model.PaymentResponse.DueDate.Value.ToString("yyyy-MM-dd")</small>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function generateGuid(fieldId) {
+            const guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            document.getElementById(fieldId).value = guid;
+        }
+
+        function togglePaymentFields() {
+            const paymentType = document.getElementById('PaymentType').value;
+            const cardFields = document.getElementById('cardFields');
+            
+            if (paymentType === 'CreditCard') {
+                cardFields.style.display = 'block';
+            } else {
+                cardFields.style.display = 'none';
+                document.getElementById('CardId').value = '';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePaymentFields();
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}
