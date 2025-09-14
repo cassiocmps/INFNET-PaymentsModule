@@ -7,6 +7,7 @@ using PaymentsModule.Domain.Interfaces.Services;
 using PaymentsModule.ExternalPaymentsProvider.Interfaces;
 using PaymentsModule.ExternalPaymentsProvider.Services;
 using PaymentsModuleAPI.Middleware;
+using System.Text.Json.Serialization;
 
 namespace PaymentsModule.API
 {
@@ -17,7 +18,13 @@ namespace PaymentsModule.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    // Configure JSON serialization to serialize enums as strings
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
             
             // Register Swagger/OpenAPI services
             builder.Services.AddEndpointsApiExplorer();
