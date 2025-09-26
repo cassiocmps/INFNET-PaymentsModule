@@ -12,6 +12,7 @@ public class ExternalPaymentProvider : IExternalPaymentProvider
         await Task.Delay(500); // Simulate network latency
         var cardPayment = new CreditCardPayment
         {
+            Id = Guid.NewGuid(),
             Card = card,
             Amount = amount,
             CreatedAt = DateTime.UtcNow,
@@ -40,6 +41,7 @@ public class ExternalPaymentProvider : IExternalPaymentProvider
         await Task.Delay(500); // Simulate network latency
         var pixPayment = new PixPayment
         {
+            Id = Guid.NewGuid(),
             QrCode = "simulated-qrcode",
             ExpirationDate = DateTime.UtcNow.AddMinutes(30),
             Amount = amount,
@@ -47,7 +49,6 @@ public class ExternalPaymentProvider : IExternalPaymentProvider
             LastUpdatedAt = DateTime.UtcNow,
             Status = PaymentStatus.PENDING
         };
-        await Task.CompletedTask;
         return pixPayment;
     }
 
@@ -56,6 +57,7 @@ public class ExternalPaymentProvider : IExternalPaymentProvider
         await Task.Delay(500); // Simulate network latency
         var boletoPayment = new BoletoPayment
         {
+            Id = Guid.NewGuid(),
             Barcode = "simulated-barcode",
             DueDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)),
             DigitableLine = "simulated-digitable-line",

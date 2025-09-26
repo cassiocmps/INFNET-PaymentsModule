@@ -39,7 +39,7 @@ public class PaymentService : IPaymentService
         var existingOrder = await _orderRepository.GetByIdAsync(orderId);
         if (existingOrder is not null)
         {
-            throw new ArgumentException($"Order ID {orderId} already exists. Please use ReissuePayment.");
+            throw new ArgumentException($"Order ID {orderId} already has a payment. Please use ReissuePayment.");
         }
 
         var cardPayment = await _externalPaymentProvider.ChargeCardPaymentAsync(amount, card);
@@ -62,7 +62,7 @@ public class PaymentService : IPaymentService
         var existingOrder = await _orderRepository.GetByIdAsync(orderId);
         if (existingOrder is not null)
         {
-            throw new ArgumentException($"Order ID {orderId} already exists. Please use ReissuePayment.");
+            throw new ArgumentException($"Order ID {orderId} already has a payment. Please use ReissuePayment.");
         }
 
         var pixPayment = await _externalPaymentProvider.CreatePixPaymentAsync(amount);
@@ -83,7 +83,7 @@ public class PaymentService : IPaymentService
         var existingOrder = await _orderRepository.GetByIdAsync(orderId);
         if (existingOrder is not null)
         {
-            throw new ArgumentException($"Order ID {orderId} already exists. Please use ReissuePayment.");
+            throw new ArgumentException($"Order ID {orderId} already has a payment. Please use ReissuePayment.");
         }
 
         var boletoPayment = await _externalPaymentProvider.CreateBoletoPaymentAsync(amount);

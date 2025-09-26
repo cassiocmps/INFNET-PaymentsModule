@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsModule.Persistance"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsModule.ExternalPaymentsProvider", "PaymentsModule.ExternalPaymentsProvider\PaymentsModule.ExternalPaymentsProvider.csproj", "{A06BEC6A-FE6C-4408-9360-B1DD86B853F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsModule.Client", "PaymentsModule.Client\PaymentsModule.Client.csproj", "{D17590F7-88D6-4BFC-9ACD-163BD85C8884}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A06BEC6A-FE6C-4408-9360-B1DD86B853F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A06BEC6A-FE6C-4408-9360-B1DD86B853F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A06BEC6A-FE6C-4408-9360-B1DD86B853F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D17590F7-88D6-4BFC-9ACD-163BD85C8884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D17590F7-88D6-4BFC-9ACD-163BD85C8884}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D17590F7-88D6-4BFC-9ACD-163BD85C8884}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D17590F7-88D6-4BFC-9ACD-163BD85C8884}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
